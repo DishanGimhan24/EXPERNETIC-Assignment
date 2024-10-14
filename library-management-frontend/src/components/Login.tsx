@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Css/Login.css';
+import { useAuth } from './AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,7 +11,7 @@ const Login = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
-
+  const { login } = useAuth(); // Get login function
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -22,7 +23,7 @@ const Login = () => {
       });
 
       setMessage(response.data.message);
-
+      login(); 
       navigate('/create'); // Redirect to the CreateBook component
     } catch (error: any) {
       setMessage(error.response?.data || 'Login failed.');
@@ -96,6 +97,9 @@ const Login = () => {
                   </label>
                 </div>
               </div>
+              <p className="small fw-bold mt-2 pt-1 mb-0">
+                  Don't have an account? <a href="/" className="link-danger">Register</a>
+                </p>
            
               <div>
           <a href="#!" className="text-white me-4">
