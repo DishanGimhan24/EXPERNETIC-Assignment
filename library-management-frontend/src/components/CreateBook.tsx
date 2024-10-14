@@ -7,7 +7,7 @@ import Header from './Header';
 const CreateBook: React.FC = () => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
-    const [isbn, setIsbn] = useState('');
+    const [description, setDescription] = useState('');
     const [publishedYear, setPublishedYear] = useState(0);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -17,7 +17,7 @@ const CreateBook: React.FC = () => {
             id: 0, // ID will be auto-generated
             title,
             author,
-            isbn,
+            description,
             publishedYear,
         };
 
@@ -25,7 +25,7 @@ const CreateBook: React.FC = () => {
         // Clear the form
         setTitle('');
         setAuthor('');
-        setIsbn('');
+        setDescription('');
         setPublishedYear(0);
     };
 
@@ -61,13 +61,13 @@ const CreateBook: React.FC = () => {
                             />
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">ISBN</label>
+                            <label className="form-label">Description</label>
                             <input
                                 type="text"
                                 className="form-control"
                                 placeholder="Enter ISBN"
-                                value={isbn}
-                                onChange={(e) => setIsbn(e.target.value)}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 required
                             />
                         </div>

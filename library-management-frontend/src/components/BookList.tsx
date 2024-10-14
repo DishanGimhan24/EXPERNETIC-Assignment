@@ -28,16 +28,17 @@ const BookList: React.FC = () => {
     };
 
     return (
-        <div>
-            <Header/>
-            <h2>Book List</h2>
-            <table>
-                <thead>
+        <div><Header />
+        <div className="container mt-5">
+            
+            <h2 className="mb-4">Book List</h2>
+            <table className="table table-striped">
+                <thead className="table-light">
                     <tr>
                         <th>ID</th>
                         <th>Title</th>
                         <th>Author</th>
-                        <th>ISBN</th>
+                        <th>Description</th>
                         <th>Published Year</th>
                         <th>Actions</th>
                     </tr>
@@ -48,16 +49,27 @@ const BookList: React.FC = () => {
                             <td>{book.id}</td>
                             <td>{book.title}</td>
                             <td>{book.author}</td>
-                            <td>{book.isbn}</td>
+                            <td>{book.description}</td>
                             <td>{book.publishedYear}</td>
                             <td>
-                                <button onClick={() => handleEdit(book.id)}>Edit</button>
-                                <button onClick={() => handleDelete(book.id)}>Delete</button>
+                                <button 
+                                    className="btn btn-warning me-2"
+                                    onClick={() => handleEdit(book.id)}
+                                >
+                                    Edit
+                                </button>
+                                <button 
+                                    className="btn btn-danger" 
+                                    onClick={() => handleDelete(book.id)}
+                                >
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+        </div>
         </div>
     );
 };

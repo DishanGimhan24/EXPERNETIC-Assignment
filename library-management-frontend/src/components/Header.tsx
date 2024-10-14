@@ -1,7 +1,7 @@
 // src/components/Header.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Header.css'; // Optional: Add CSS for styling
+import './Css/Header.css';
 
 const Header: React.FC = () => {
     return (
