@@ -1,92 +1,62 @@
-// src/components/BookEditForm.tsx
-import React, { useState, useEffect } from 'react';
-import { updateBook } from '../services/BookService'; // Ensure you import the correct update function
+// src/components/EditBook.tsx
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getBookById, updateBook } from '../services/BookService';
 import { Book } from '../models/Book';
 
-interface BookEditFormProps {
-    book: Book;
-    onUpdate: (updatedBook: Book) => void;
-    onCancel: () => void;
-}
-
-const BookEditForm: React.FC<BookEditFormProps> = ({ book, onUpdate, onCancel }) => {
-    const [title, setTitle] = useState<string>(book.title);
-    const [author, setAuthor] = useState<string>(book.author);
-    const [isbn, setIsbn] = useState<string>(book.isbn);
-    const [publishedYear, setPublishedYear] = useState<number>(book.publishedYear);
+const EditBook: React.FC = () => {
+    const { id } = useParams<{ id: string }>(); // Get the book ID from the route
+    const navigate = useNavigate(); // Hook for navigation
+    const [book, setBook] = useState<Book | null>(null);
+    const [title, setTitle] = useState('');
+    const [author, setAuthor] = useState('');
 
     useEffect(() => {
-        setTitle(book.title);
-        setAuthor(book.author);
-        setIsbn(book.isbn);
-        setPublishedYear(book.publishedYear);
-    }, [book]);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        const updatedBook: Book = { 
-            ...book, 
-            title, 
-            author, 
-            isbn, 
-            publishedYear 
+        const fetchBook = async () => {
+            if (id) {
+                const fetchedBook = await getBookById(Number(id));
+                setBook(fetchedBook);
+                setTitle(fetchedBook.title);
+                setAuthor(fetchedBook.author);
+            }
         };
 
-        try {
-            await updateBook(book.id, updatedBook); // Call the service to update the book with its ID
-            onUpdate(updatedBook); // Call the parent handler to update the book list
-        } catch (error) {
-            console.error('Error updating book:', error);
-            // You may want to handle error scenarios (e.g., show a notification)
+        fetchBook();
+    }, [id]);
+
+    const handleUpdate = async () => {
+        if (book) {
+            const updatedBook: Book = { ...book, title, author };
+            await updateBook(book.id, updatedBook);
+            navigate('/books'); // Redirect to book list after update
         }
     };
 
     return (
         <div>
-            <h3>Edit Book</h3>
-            <form onSubmit={handleSubmit}>
+            <h2>Edit Book</h2>
+            {book ? (
                 <div>
-                    <label>Title:</label>
-                    <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
+                    <input 
+                        type="text" 
+                        value={title} 
+                        onChange={(e) => setTitle(e.target.value)} 
+                        placeholder="Title" 
                     />
-                </div>
-                <div>
-                    <label>Author:</label>
-                    <input
-                        type="text"
-                        value={author}
-                        onChange={(e) => setAuthor(e.target.value)}
-                        required
+                    <input 
+                        type="text" 
+                        value={author} 
+                        onChange={(e) => setAuthor(e.target.value)} 
+                        placeholder="Author" 
                     />
+                    <button onClick={handleUpdate}>Update</button>
+                    <button onClick={() => navigate('/books')}>Cancel</button>
                 </div>
-                <div>
-                    <label>ISBN:</label>
-                    <input
-                        type="text"
-                        value={isbn}
-                        onChange={(e) => setIsbn(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Published Year:</label>
-                    <input
-                        type="number"
-                        value={publishedYear}
-                        onChange={(e) => setPublishedYear(Number(e.target.value))}
-                        required
-                    />
-                </div>
-                <button type="submit">Update Book</button>
-                <button type="button" onClick={onCancel}>Cancel</button>
-            </form>
+            ) : (
+                <p>Loading book details...</p>
+            )}
         </div>
     );
 };
 
-export default BookEditForm;
+export default EditBook;

@@ -1,12 +1,13 @@
 // src/components/BookList.tsx
 import React, { useEffect, useState } from 'react';
-import { getBooks, deleteBook } from '../services/BookService'; // Import deleteBook
+import { useNavigate } from 'react-router-dom';
+import { getBooks, deleteBook } from '../services/BookService';
 import { Book } from '../models/Book';
-import BookEditForm from './BookEditForm'; // Import BookEditForm component
+import Header from './Header';
 
 const BookList: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
-    const [editingBook, setEditingBook] = useState<Book | null>(null); // State for the book being edited
+    const navigate = useNavigate(); // Hook for navigation
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -19,38 +20,44 @@ const BookList: React.FC = () => {
 
     const handleDelete = async (id: number) => {
         await deleteBook(id);
-        setBooks(books.filter(book => book.id !== id)); // Remove the deleted book from the state
+        setBooks(books.filter(book => book.id !== id)); // Update the state after deletion
     };
 
-    const handleEdit = (book: Book) => {
-        setEditingBook(book); // Set the book to edit
-    };
-
-    const handleUpdate = (updatedBook: Book) => {
-        setBooks(books.map(book => (book.id === updatedBook.id ? updatedBook : book))); // Update the book in the state
-        setEditingBook(null); // Clear the editing book
+    const handleEdit = (id: number) => {
+        navigate(`/edit/${id}`); // Navigate to the edit route
     };
 
     return (
         <div>
+            <Header/>
             <h2>Book List</h2>
-            <ul>
-                {books.map(book => (
-                    <li key={book.id}>
-                        {book.title} by {book.author}
-                        <button onClick={() => handleEdit(book)}>Edit</button>
-                        <button onClick={() => handleDelete(book.id)}>Delete</button>
-                    </li>
-                ))}
-            </ul>
-
-            {editingBook && (
-                <BookEditForm 
-                    book={editingBook} 
-                    onUpdate={handleUpdate} 
-                    onCancel={() => setEditingBook(null)} 
-                />
-            )}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>ISBN</th>
+                        <th>Published Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {books.map((book) => (
+                        <tr key={book.id}>
+                            <td>{book.id}</td>
+                            <td>{book.title}</td>
+                            <td>{book.author}</td>
+                            <td>{book.isbn}</td>
+                            <td>{book.publishedYear}</td>
+                            <td>
+                                <button onClick={() => handleEdit(book.id)}>Edit</button>
+                                <button onClick={() => handleDelete(book.id)}>Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };

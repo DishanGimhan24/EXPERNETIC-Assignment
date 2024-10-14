@@ -1,15 +1,24 @@
 // src/App.tsx
 import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import BookList from './components/BookList';
 import CreateBook from './components/CreateBook';
+import EditBook from './components/BookEditForm';
 
 const App: React.FC = () => {
     return (
-        <div>
-            <h1>Library Management System</h1>
-            <CreateBook />
-            <BookList />
-        </div>
+        <Router>
+            <div>
+                
+
+                <Routes>
+                    <Route path="/" element={<h2>Welcome to the Library Management System!</h2>} />
+                    <Route path="/create" element={<CreateBook />} />
+                    <Route path="/books" element={<BookList />} />
+                    <Route path="/edit/:id" element={<EditBook />} />
+                </Routes>
+            </div>
+        </Router>
     );
 };
 

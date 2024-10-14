@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { createBook } from '../services/BookService';
 import { Book } from '../models/Book';
+import Header from './Header';
 
 const CreateBook: React.FC = () => {
     const [title, setTitle] = useState('');
@@ -30,6 +31,7 @@ const CreateBook: React.FC = () => {
 
     return (
         <form onSubmit={handleSubmit}>
+             <Header/>
             <h2>Create Book</h2>
             <input
                 type="text"
