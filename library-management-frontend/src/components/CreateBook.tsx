@@ -30,39 +30,66 @@ const CreateBook: React.FC = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-             <Header/>
-            <h2>Create Book</h2>
-            <input
-                type="text"
-                placeholder="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-            />
-            <input
-                type="text"
-                placeholder="Author"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                required
-            />
-            <input
-                type="text"
-                placeholder="ISBN"
-                value={isbn}
-                onChange={(e) => setIsbn(e.target.value)}
-                required
-            />
-            <input
-                type="number"
-                placeholder="Published Year"
-                value={publishedYear}
-                onChange={(e) => setPublishedYear(Number(e.target.value))}
-                required
-            />
-            <button type="submit">Add Book</button>
-        </form>
+        <div>
+        <Header />
+        <div className="container mt-5">
+           
+            <div className="card">
+                <div className="card-body">
+                    <h2 className="card-title">Create Book</h2>
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-3">
+                            <label className="form-label">Title</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter book title"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">Author</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter author name"
+                                value={author}
+                                onChange={(e) => setAuthor(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">ISBN</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter ISBN"
+                                value={isbn}
+                                onChange={(e) => setIsbn(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">Published Year</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                placeholder="Enter published year"
+                                value={publishedYear}
+                                onChange={(e) => setPublishedYear(Number(e.target.value))}
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="btn btn-primary">
+                            Add Book
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
     );
 };
 
