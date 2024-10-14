@@ -43,9 +43,14 @@ namespace LibraryManagementApi.Controllers
         [HttpPost]
         public ActionResult<User> CreateUser([FromBody] User user)
         {
-           // if (user == null) return BadRequest("User cannot be null.");
+            if (user == null) return BadRequest("User cannot be null.");
 
-            // Optionally, you can add checks for existing users (e.g., email) here.
+            // Optional: Check for existing users by email
+            var existingUser = _context.Users.FirstOrDefault(u => u.Email == user.Email);
+            if (existingUser != null)
+            {
+                return Conflict(new { message = "Email is already registered." });
+            }
 
             _context.Users.Add(user);
             _context.SaveChanges();
@@ -95,5 +100,40 @@ namespace LibraryManagementApi.Controllers
 
             return NoContent();
         }
+
+        // POST: api/user/login
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginRequest request)
+        {
+            // Validate user input
+            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+            {
+                return BadRequest(new { message = "Email and password are required." });
+            }
+
+            // Check if the user exists in the database
+            var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            // Validate password
+            if (user.Password != request.Password)
+            {
+                return Unauthorized(new { message = "Invalid password." });
+            }
+
+            // Successful login
+            return Ok(new { message = "Login successful.", user });
+        }
+    }
+
+    // Login request model
+    public class LoginRequest
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }
