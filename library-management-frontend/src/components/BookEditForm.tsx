@@ -11,7 +11,8 @@ const EditBook: React.FC = () => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
-    const [publishedYear, setPublishedYear] = useState(0);
+    const [publishedYear, setPublishedYear] = useState<string>(''); // Keep as string for input control
+    const [error, setError] = useState<string>(''); // State for error messages
 
     useEffect(() => {
         const fetchBook = async () => {
@@ -21,7 +22,7 @@ const EditBook: React.FC = () => {
                 setTitle(fetchedBook.title);
                 setAuthor(fetchedBook.author);
                 setDescription(fetchedBook.description); 
-                setPublishedYear(fetchedBook.publishedYear); // Set the published year
+                setPublishedYear(fetchedBook.publishedYear.toString()); // Set the published year as a string
             }
         };
 
@@ -29,8 +30,16 @@ const EditBook: React.FC = () => {
     }, [id]);
 
     const handleUpdate = async () => {
+        const year = Number(publishedYear);
+        
+        // Validate published year: must be a 4-digit positive number
+        if (year < 1000 || year > 9999) {
+            setError('Published year must be a four-digit positive number.');
+            return;
+        }
+
         if (book) {
-            const updatedBook: Book = { ...book, title, author,description, publishedYear }; // Include ISBN and Published Year
+            const updatedBook: Book = { ...book, title, author, description, publishedYear: year };
             await updateBook(book.id, updatedBook);
             navigate('/books'); // Redirect to book list after update
         }
@@ -68,7 +77,7 @@ const EditBook: React.FC = () => {
                             className="form-control"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            placeholder="ISBN"
+                            placeholder="Description"
                         />
                     </div>
                     <div className="mb-3">
@@ -77,9 +86,12 @@ const EditBook: React.FC = () => {
                             type="number"
                             className="form-control"
                             value={publishedYear}
-                            onChange={(e) => setPublishedYear(Number(e.target.value))}
+                            onChange={(e) => setPublishedYear(e.target.value)} // Keep it as a string for validation
                             placeholder="Published Year"
+                            min="1000" // Set minimum value to 1000 for 4-digit years
+                            max="9999" // Set maximum value to 9999 for 4-digit years
                         />
+                        {error && <div className="text-danger">{error}</div>} {/* Display error message */}
                     </div>
                     <button className="btn btn-primary me-2" onClick={handleUpdate}>
                         Update
