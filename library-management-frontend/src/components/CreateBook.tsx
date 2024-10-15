@@ -79,7 +79,7 @@ const CreateBook: React.FC = () => {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Enter ISBN"
+                                    placeholder="Enter Description"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     required
