@@ -50,9 +50,12 @@ and install the necessary Node modules using:
 npm install
 
 5. Run the Application
+
 Server Side
 To run the server-side application, navigate to the folder containing your .csproj file and execute:
 dotnet run
+
+
 The server should start and listen on the specified port (usually http://localhost:5025).
 
 Client Side
