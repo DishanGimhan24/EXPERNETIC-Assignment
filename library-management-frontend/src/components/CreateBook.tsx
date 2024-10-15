@@ -8,7 +8,7 @@ const CreateBook: React.FC = () => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
-    const [publishedYear, setPublishedYear] = useState(0);
+    const [publishedYear, setPublishedYear] = useState<string | number>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,7 +18,7 @@ const CreateBook: React.FC = () => {
             title,
             author,
             description,
-            publishedYear,
+            publishedYear: Number(publishedYear), 
         };
 
         await createBook(newBook);
@@ -78,7 +78,7 @@ const CreateBook: React.FC = () => {
                                 className="form-control"
                                 placeholder="Enter published year"
                                 value={publishedYear}
-                                onChange={(e) => setPublishedYear(Number(e.target.value))}
+                                onChange={(e) => setPublishedYear(e.target.value === '' ? '' : Number(e.target.value))}
                                 required
                             />
                         </div>
