@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent, FocusEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -16,10 +16,10 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
-  const [touchedFields, setTouchedFields] = useState<TouchedFields>({ 
-    name: false, 
-    email: false, 
-    password: false 
+  const [touchedFields, setTouchedFields] = useState<TouchedFields>({
+    name: false,
+    email: false,
+    password: false,
   });
 
   const navigate = useNavigate();
@@ -31,7 +31,6 @@ const Register: React.FC = () => {
     if (!/[A-Z]/.test(password)) validationErrors.push('Password must contain at least one uppercase letter.');
     if (!/[a-z]/.test(password)) validationErrors.push('Password must contain at least one lowercase letter.');
     if (!/[0-9]/.test(password)) validationErrors.push('Password must contain at least one digit.');
-    //if (!/[\W_]/.test(password)) validationErrors.push('Password must contain at least one special character.');
     if (/\s/.test(password)) validationErrors.push('Password must not contain spaces.');
 
     setErrors(validationErrors);
@@ -55,10 +54,10 @@ const Register: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5025/api/User', { 
-        name, 
-        email, 
-        password 
+      const response = await axios.post('http://localhost:5025/api/User', {
+        name,
+        email,
+        password,
       });
       setMessage(response.data.message);
       navigate('/login');
@@ -80,10 +79,10 @@ const Register: React.FC = () => {
       <div className="container-fluid h-custom">
         <div className="row d-flex justify-content-center align-items-center h-100">
           <div className="col-md-9 col-lg-6 col-xl-5">
-            <img 
-              src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" 
-              className="img-fluid" 
-              alt="Registration illustration" 
+            <img
+              src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+              className="img-fluid"
+              alt="Registration illustration"
             />
           </div>
           <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
@@ -103,12 +102,12 @@ const Register: React.FC = () => {
                   <span className="input-group-text"><i className="bi bi-person"></i></span>
                   <input
                     type="text"
-                    className={`form-control ${isValidInput(name) ? 'is-valid' : 'is-invalid'}`}
+                    className={`form-control ${isValidInput(name) ? 'is-valid' : ''}`} // Remove is-invalid class
                     placeholder="Enter your name"
                     value={name}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => { 
-                      setName(e.target.value); 
-                      checkFormValidity(); 
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setName(e.target.value);
+                      checkFormValidity();
                     }}
                     onBlur={() => handleBlur('name')}
                     required
@@ -124,12 +123,12 @@ const Register: React.FC = () => {
                   <span className="input-group-text"><i className="bi bi-envelope"></i></span>
                   <input
                     type="email"
-                    className={`form-control ${isValidInput(email) ? 'is-valid' : 'is-invalid'}`}
+                    className={`form-control ${isValidInput(email) ? 'is-valid' : ''}`} // Remove is-invalid class
                     placeholder="Enter a valid email address"
                     value={email}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => { 
-                      setEmail(e.target.value); 
-                      checkFormValidity(); 
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setEmail(e.target.value);
+                      checkFormValidity();
                     }}
                     onBlur={() => handleBlur('email')}
                     required
@@ -145,7 +144,7 @@ const Register: React.FC = () => {
                   <span className="input-group-text"><i className="bi bi-lock"></i></span>
                   <input
                     type="password"
-                    className={`form-control ${errors.length > 0 ? 'is-invalid' : 'is-valid'}`}
+                    className={`form-control ${errors.length > 0 ? 'is-invalid' : (touchedFields.password && password ? 'is-valid' : '')}`} // Adjust validity classes
                     placeholder="Create a password"
                     value={password}
                     onChange={handlePasswordChange}
