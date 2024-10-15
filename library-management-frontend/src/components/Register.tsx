@@ -1,34 +1,79 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent, FocusEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+
+interface TouchedFields {
+  name: boolean;
+  email: boolean;
+  password: boolean;
+}
+
+const Register: React.FC = () => {
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [message, setMessage] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
+  const [touchedFields, setTouchedFields] = useState<TouchedFields>({ 
+    name: false, 
+    email: false, 
+    password: false 
+  });
+
   const navigate = useNavigate();
 
-  const handleRegister = async (e: React.FormEvent) => {
+  const validatePassword = (password: string): boolean => {
+    const validationErrors: string[] = [];
+
+    if (password.length < 8) validationErrors.push('Password must be at least 8 characters long.');
+    if (!/[A-Z]/.test(password)) validationErrors.push('Password must contain at least one uppercase letter.');
+    if (!/[a-z]/.test(password)) validationErrors.push('Password must contain at least one lowercase letter.');
+    if (!/[0-9]/.test(password)) validationErrors.push('Password must contain at least one digit.');
+    //if (!/[\W_]/.test(password)) validationErrors.push('Password must contain at least one special character.');
+    if (/\s/.test(password)) validationErrors.push('Password must not contain spaces.');
+
+    setErrors(validationErrors);
+    return validationErrors.length === 0;
+  };
+
+  const checkFormValidity = (): void => {
+    setIsFormValid(name.trim() !== '' && email.trim() !== '' && validatePassword(password));
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    validatePassword(newPassword);
+    checkFormValidity();
+  };
+
+  const handleRegister = async (e: FormEvent): Promise<void> => {
     e.preventDefault();
+    if (!isFormValid) return;
+
     setLoading(true);
-
     try {
-      const response = await axios.post('http://localhost:5025/api/User', {
-        name,
-        email,
-        password,
+      const response = await axios.post('http://localhost:5025/api/User', { 
+        name, 
+        email, 
+        password 
       });
-
       setMessage(response.data.message);
-      navigate('/login'); // Redirect to login page after successful registration
-
+      navigate('/login');
     } catch (error: any) {
       setMessage(error.response?.data?.message || 'Registration failed.');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleBlur = (field: keyof TouchedFields): void => {
+    setTouchedFields({ ...touchedFields, [field]: true });
+  };
+
+  const isValidInput = (field: string): boolean => touchedFields[field as keyof TouchedFields] && !!field;
 
   return (
     <section className="vh-100">
@@ -53,58 +98,79 @@ const Register = () => {
                 </div>
               )}
 
-              {loading ? (
-                <div className="text-center">
-                  <p>Loading...</p>
+              <div className="mb-4">
+                <div className="input-group">
+                  <span className="input-group-text"><i className="bi bi-person"></i></span>
+                  <input
+                    type="text"
+                    className={`form-control ${isValidInput(name) ? 'is-valid' : 'is-invalid'}`}
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => { 
+                      setName(e.target.value); 
+                      checkFormValidity(); 
+                    }}
+                    onBlur={() => handleBlur('name')}
+                    required
+                  />
+                  {touchedFields.name && !name && (
+                    <div className="invalid-feedback">Name is required.</div>
+                  )}
                 </div>
-              ) : (
-                <>
-                  <div className="mb-4">
-                    <div className="input-group">
-                      <span className="input-group-text"><i className="bi bi-person"></i></span>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Enter your name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
+              </div>
 
-                  <div className="mb-4">
-                    <div className="input-group">
-                      <span className="input-group-text"><i className="bi bi-envelope"></i></span>
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Enter a valid email address"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
+              <div className="mb-4">
+                <div className="input-group">
+                  <span className="input-group-text"><i className="bi bi-envelope"></i></span>
+                  <input
+                    type="email"
+                    className={`form-control ${isValidInput(email) ? 'is-valid' : 'is-invalid'}`}
+                    placeholder="Enter a valid email address"
+                    value={email}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => { 
+                      setEmail(e.target.value); 
+                      checkFormValidity(); 
+                    }}
+                    onBlur={() => handleBlur('email')}
+                    required
+                  />
+                  {touchedFields.email && !email && (
+                    <div className="invalid-feedback">Email is required.</div>
+                  )}
+                </div>
+              </div>
 
-                  <div className="mb-4">
-                    <div className="input-group">
-                      <span className="input-group-text"><i className="bi bi-lock"></i></span>
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="Create a password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
+              <div className="mb-4">
+                <div className="input-group">
+                  <span className="input-group-text"><i className="bi bi-lock"></i></span>
+                  <input
+                    type="password"
+                    className={`form-control ${errors.length > 0 ? 'is-invalid' : 'is-valid'}`}
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    onBlur={() => handleBlur('password')}
+                    required
+                  />
+                  {errors.length > 0 && (
+                    <div className="invalid-feedback d-block">
+                      <ul className="mb-0">
+                        {errors.map((error, index) => (
+                          <li key={index}>{error}</li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
-                </>
-              )}
+                  )}
+                </div>
+              </div>
 
               <div className="text-center text-lg-start mt-4 pt-2">
-                <button type="submit" className="btn btn-primary btn-lg" style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}>
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg"
+                  style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
+                  disabled={!isFormValid}
+                >
                   Register
                 </button>
                 <p className="small fw-bold mt-2 pt-1 mb-0">
@@ -113,25 +179,6 @@ const Register = () => {
               </div>
             </form>
           </div>
-        </div>
-      </div>
-      <div className="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
-        <div className="text-white mb-3 mb-md-0">
-          Copyright © 2024. All rights reserved.
-        </div>
-        <div>
-          <a href="#!" className="text-white me-4">
-            <i className="bi bi-facebook"></i>
-          </a>
-          <a href="#!" className="text-white me-4">
-            <i className="bi bi-twitter"></i>
-          </a>
-          <a href="#!" className="text-white me-4">
-            <i className="bi bi-google"></i>
-          </a>
-          <a href="#!" className="text-white">
-            <i className="bi bi-linkedin"></i>
-          </a>
         </div>
       </div>
     </section>
