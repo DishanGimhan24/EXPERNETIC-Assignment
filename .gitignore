@@ -365,3 +365,5 @@ library-management-frontend/package-lock.json
 Api/sqlite.db
 Api/sqlite.db
 Api/sqlite.db-shm
+package-lock.json
+Api/sqlite.db-wal
